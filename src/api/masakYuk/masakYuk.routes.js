@@ -8,8 +8,8 @@ import {
   C_getResepByKategori,
   C_getResepDisimpanByUser,
   C_simpanResep,
-  C_hapusSimpanResep,
-} from "./masakyuk.controller.js";
+  C_hapusSimpanResep
+} from "./masakYuk.controller.js";
 
 router.get("/kategori", C_getAllKategori); // Ambil semua kategori
 router.get("/resep", C_getAllResep); // Semua resep (dengan pagination)

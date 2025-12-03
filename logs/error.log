@@ -412,3 +412,139 @@
     at async M_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.model.js:11:20)
     at async S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:18:16)
     at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:13:19)
+2025-10-22 21:04:56 [ERROR]: error: column "username" does not exist
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async M_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.model.js:11:20)
+    at async S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:18:16)
+    at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:13:19)
+2025-10-27 20:27:50 [ERROR]: Error: Password salah
+    at S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:28:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:13:19)
+2025-10-30 10:57:57 [ERROR]: TypeError: Cannot read properties of undefined (reading 'payload')
+    at C_generateTokenNoLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:87:28)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-10-30 10:58:09 [ERROR]: ZodError: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [],
+    "message": "Invalid input: expected object, received undefined"
+  }
+]
+    at C_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:109:36)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-10-30 10:58:28 [ERROR]: ZodError: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [],
+    "message": "Invalid input: expected object, received undefined"
+  }
+]
+    at C_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:109:36)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-11-04 08:11:47 [ERROR]: Error: Password salah
+    at S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:28:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:13:19)
+2025-11-04 08:12:09 [ERROR]: Error: Password salah
+    at S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:28:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:13:19)
+2025-11-04 08:19:33 [ERROR]: error: duplicate key value violates unique constraint "master_user_email_key"
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async M_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.model.js:28:18)
+    at async S_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:49:16)
+    at async C_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:114:18)
+2025-11-26 12:07:46 [ERROR]: error: duplicate key value violates unique constraint "master_user_email_key"
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async M_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.model.js:28:18)
+    at async S_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:49:16)
+    at async C_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:114:18)
+2025-11-29 21:48:46 [ERROR]: TypeError: loginSchema.validate is not a function
+    at C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:12:35)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-11-29 21:49:29 [ERROR]: TypeError: loginSchema.validate is not a function
+    at C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:12:35)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-11-29 21:51:53 [ERROR]: TypeError: loginSchema.validate is not a function
+    at C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:12:35)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-11-29 21:52:22 [ERROR]: TypeError: registerSchema.validate is not a function
+    at C_register (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:56:38)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-11-29 21:55:27 [ERROR]: TypeError: loginSchema.validate is not a function
+    at C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:12:35)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+    at Function.handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:186:3)
+2025-11-29 22:05:56 [ERROR]: Error: Email tidak ditemukan
+    at S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:25:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:21:25)

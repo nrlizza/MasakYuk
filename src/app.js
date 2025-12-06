@@ -8,13 +8,23 @@ const app = express()
 
 app.use(express.json())
 
-// Sederhanakan CORS untuk testing
+// CORS yang lebih flexible untuk development
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
+  origin: true, // Izinkan semua origin untuk development
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 app.use(cookieParser())
+
+// Logging middleware untuk debugging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  next();
+})
 
 // Test route basic
 app.get('/', (req, res) => {

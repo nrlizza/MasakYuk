@@ -11,9 +11,11 @@ export async function C_login(req, res, next) {
   try {
     const validation = loginSchema.safeParse(req.body);
     if (!validation.success) {
+      const errorMessage = validation.error?.errors?.[0]?.message || 'Validation error';
       return res.status(400).json({
         success: false,
-        message: validation.error.errors[0].message
+        message: errorMessage,
+        errors: validation.error?.errors
       });
     }
 
@@ -66,9 +68,11 @@ export async function C_register(req, res, next) {
   try {
     const validation = registerSchema.safeParse(req.body);
     if (!validation.success) {
+      const errorMessage = validation.error?.errors?.[0]?.message || 'Validation error';
       return res.status(400).json({
         success: false,
-        message: validation.error.errors[0].message
+        message: errorMessage,
+        errors: validation.error?.errors
       });
     }
 

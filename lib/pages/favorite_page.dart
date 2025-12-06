@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/resep_data.dart';
 import '../models/resep_model.dart';
+import '../services/api_services.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -10,6 +12,94 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
+  final ApiService _apiService = ApiService();
+  List<int> _favoritResepIds = [];
+  bool _isLoading = true;
+  String? _token;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('id_user');
+      final token = prefs.getString('token');
+      
+      if (userId != null) {
+        // Ambil favorit dari backend
+        final favorites = await _apiService.getFavorites(userId, token);
+        setState(() {
+          _favoritResepIds = favorites
+              .map((fav) => fav['id_resep'] as int)
+              .toList();
+          _isLoading = false;
+        });
+      } else {
+        // Jika belum login, gunakan data lokal
+        setState(() {
+          _favoritResepIds = resepList
+              .where((r) => r.isFavorite)
+              .map((r) => resepList.indexOf(r) + 1)
+              .toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading favorites: $e');
+      // Fallback ke data lokal jika error
+      setState(() {
+        _favoritResepIds = resepList
+            .where((r) => r.isFavorite)
+            .map((r) => resepList.indexOf(r) + 1)
+            .toList();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _removeFavorite(int resepId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id_user');
+    final token = prefs.getString('token');
+    
+    if (userId != null) {
+      try {
+        // Cari id_simpan dari list favorit
+        final favorites = await _apiService.getFavorites(userId, token);
+        final simpanan = favorites.firstWhere(
+          (fav) => fav['id_resep'] == resepId,
+          orElse: () => null,
+        );
+        
+        if (simpanan != null) {
+          final idSimpan = simpanan['id_simpan'] as int;
+          await _apiService.removeFavorite(idSimpan, token);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Dihapus dari favorit')),
+          );
+          _loadFavorites(); // Reload data
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    } else {
+      // Jika belum login, update lokal saja
+      setState(() {
+        _favoritResepIds.remove(resepId);
+        if (resepId - 1 < resepList.length) {
+          resepList[resepId - 1].isFavorite = false;
+        }
+      });
+    }
+  }
   void _showDetailPopup(BuildContext context, Resep resep) {
     showDialog(
       context: context,
@@ -180,9 +270,12 @@ class _FavoritePageState extends State<FavoritePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil daftar resep yang difavoritkan
+    // Ambil daftar resep berdasarkan ID favorit dari backend
     final List<Resep> favoriteList = resepList
-        .where((resep) => resep.isFavorite)
+        .asMap()
+        .entries
+        .where((entry) => _favoritResepIds.contains(entry.key + 1))
+        .map((entry) => entry.value)
         .toList();
 
     return Scaffold(
@@ -195,67 +288,93 @@ class _FavoritePageState extends State<FavoritePage> {
         ),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadFavorites,
+            tooltip: 'Refresh',
+          ),
+        ],
       ),
-      body: favoriteList.isEmpty
-          ? const Center(
-              child: Text(
-                'Belum ada resep favorit 😢',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            )
-          : ListView.builder(
-              itemCount: favoriteList.length,
-              itemBuilder: (context, index) {
-                final resep = favoriteList[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  elevation: 3,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        resep.gambar,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : favoriteList.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.favorite_border,
+                        size: 80,
+                        color: Colors.grey,
                       ),
-                    ),
-                    title: Text(
-                      resep.nama,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      resep.kategori,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                        size: 26,
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Belum ada resep favorit 😢',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          resep.isFavorite = false;
-                        });
-                      },
-                      tooltip: 'Hapus dari Favorit',
-                    ),
-                    onTap: () => _showDetailPopup(context, resep),
+                      const SizedBox(height: 8),
+                      Text(
+                        _token == null || _token!.isEmpty
+                            ? 'Login untuk menyimpan favorit'
+                            : 'Tambahkan resep ke favorit dari halaman Resep',
+                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                )
+              : ListView.builder(
+                  itemCount: favoriteList.length,
+                  itemBuilder: (context, index) {
+                    final resep = favoriteList[index];
+                    final resepId = resepList.indexOf(resep) + 1;
+                    
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      elevation: 3,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            resep.gambar,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        title: Text(
+                          resep.nama,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          resep.kategori,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 26,
+                          ),
+                          onPressed: () => _removeFavorite(resepId),
+                          tooltip: 'Hapus dari Favorit',
+                        ),
+                        onTap: () => _showDetailPopup(context, resep),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }

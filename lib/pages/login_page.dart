@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import 'regis_page.dart';
+import '../services/api_services.dart'; // import ApiService
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key}); // super parameter
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -18,29 +19,63 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
   bool _obscurePassword = true;
 
+  final ApiService _apiService = ApiService();
+
   Future<void> _login() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? savedEmail = prefs.getString('email');
-    String? savedPassword = prefs.getString('password');
-
-    savedEmail ??= 'user@gmail.com';
-    savedPassword ??= '123456';
-    await prefs.setString('email', savedEmail);
-    await prefs.setString('password', savedPassword);
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (_emailController.text == savedEmail &&
-        _passwordController.text == savedPassword) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
+    try {
+      final response = await _apiService.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
-    } else {
+
+      // Simpan token, email, dan id_user jika ada
+      if (response.containsKey('token')) {
+        final prefs = await SharedPreferences.getInstance();
+        
+        // SELALU simpan token dan id_user untuk keperluan favorit
+        await prefs.setString('token', response['token']);
+        
+        // Simpan email hanya jika rememberMe dicentang
+        if (rememberMe) {
+          await prefs.setString('email', _emailController.text.trim());
+        }
+        
+        // Simpan id_user dari response
+        if (response.containsKey('data') && response['data'] != null) {
+          final userData = response['data'];
+          if (userData['id_user'] != null) {
+            await prefs.setInt('id_user', userData['id_user']);
+          }
+        } else if (response.containsKey('user') && response['user'] != null) {
+          final userData = response['user'];
+          if (userData['id_user'] != null) {
+            await prefs.setInt('id_user', userData['id_user']);
+          }
+        }
+        
+        print('Token saved: ${response['token']}');
+        print('User ID saved: ${await prefs.getInt('id_user')}');
+
+        // ✅ Pastikan mounted sebelum pakai context
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+        );
+      } else {
+        final errorMessage = response['message'] ?? 'Login gagal';
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email atau password salah")),
+        SnackBar(content: Text('Login error: $e')),
       );
     }
 
@@ -48,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _loginWithGoogle() {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Login dengan Google belum diaktifkan"),
@@ -74,7 +110,6 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 🔸 Logo dan judul
                 const Icon(
                   Icons.restaurant_menu,
                   color: Colors.white,
@@ -95,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 30),
 
-                // 🔸 Card Form Login
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -103,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
+                        color: Colors.black.withValues(alpha: 38), // 0.15*255 ≈ 38
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -120,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 📧 Email
+                      // Email
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -132,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // 🔐 Password
+                      // Password
                       TextField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
@@ -157,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 10),
 
-                      // ✅ Ingat saya + tombol daftar
+                      // Ingat saya + tombol daftar
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -177,6 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           TextButton(
                             onPressed: () {
+                              if (!mounted) return;
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -193,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 10),
 
-                      // 🔸 Tombol login
+                      // Tombol login
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -219,7 +254,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       const SizedBox(height: 20),
 
-                      // 🧑‍💻 Login dengan Google
+                      // Login dengan Google
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(

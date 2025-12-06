@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter: Run Debug",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "env": {
+                "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com",
+                "PUB_HOSTED_URL": "https://pub.dartlang.org"
+            }
+        },
+        {
+            "name": "Flutter: Run Release",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "flutterMode": "release",
+            "env": {
+                "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com",
+                "PUB_HOSTED_URL": "https://pub.dartlang.org"
+            }
+        },
+        {
+            "name": "Flutter: Run Profile",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "flutterMode": "profile",
+            "env": {
+                "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com",
+                "PUB_HOSTED_URL": "https://pub.dartlang.org"
+            }
+        }
+    ]
+}

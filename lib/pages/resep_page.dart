@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:masakyuk/data/resep_data.dart';
 import 'package:masakyuk/models/resep_model.dart';
+import '../services/api_services.dart';
 
 class ResepPage extends StatefulWidget {
   final String? filterBahanPokok;
@@ -13,12 +15,96 @@ class ResepPage extends StatefulWidget {
 class _ResepPageState extends State<ResepPage> {
   String selectedBahan = "Semua";
   String searchQuery = "";
+  final ApiService _apiService = ApiService();
+  String? _token;
+  Set<int> _favoritResepIds = {};
 
   @override
   void initState() {
     super.initState();
     if (widget.filterBahanPokok != null) {
       selectedBahan = widget.filterBahanPokok!;
+    }
+    _loadToken();
+    _loadFavorites();
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = prefs.getString('token');
+    });
+  }
+
+  Future<void> _loadFavorites() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('id_user');
+      final token = prefs.getString('token');
+      
+      if (userId != null) {
+        final favorites = await _apiService.getFavorites(userId, token);
+        setState(() {
+          _favoritResepIds = favorites
+              .map((fav) => fav['id_resep'] as int)
+              .toSet();
+        });
+      }
+    } catch (e) {
+      print('Error loading favorites: $e');
+    }
+  }
+
+  Future<void> _toggleFavorite(Resep resep, int resepId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id_user');
+    final token = prefs.getString('token');
+    final isFavorite = _favoritResepIds.contains(resepId);
+    
+    if (userId == null) {
+      // Jika belum login, tampilkan pesan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login terlebih dahulu untuk menyimpan favorit'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        // Hapus dari favorit - perlu cari id_simpan dulu
+        final favorites = await _apiService.getFavorites(userId, token);
+        final simpanan = favorites.firstWhere(
+          (fav) => fav['id_resep'] == resepId,
+          orElse: () => null,
+        );
+        
+        if (simpanan != null) {
+          final idSimpan = simpanan['id_simpan'] as int;
+          await _apiService.removeFavorite(idSimpan, token);
+          setState(() {
+            _favoritResepIds.remove(resepId);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Dihapus dari favorit')),
+          );
+        }
+      } else {
+        // Tambah ke favorit
+        await _apiService.addFavorite(userId, resepId, token);
+        setState(() {
+          _favoritResepIds.add(resepId);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ditambahkan ke favorit')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
@@ -107,6 +193,9 @@ class _ResepPageState extends State<ResepPage> {
               ),
               itemBuilder: (context, index) {
                 final resep = filteredList[index];
+                final resepId = resepList.indexOf(resep) + 1;
+                final isFavorite = _favoritResepIds.contains(resepId);
+                
                 return GestureDetector(
                   onTap: () => _showDetail(context, resep),
                   child: Card(
@@ -148,18 +237,14 @@ class _ResepPageState extends State<ResepPage> {
                               ),
                               IconButton(
                                 icon: Icon(
-                                  resep.isFavorite
+                                  isFavorite
                                       ? Icons.favorite
                                       : Icons.favorite_border,
-                                  color: resep.isFavorite
+                                  color: isFavorite
                                       ? Colors.red
                                       : Colors.grey,
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    resep.isFavorite = !resep.isFavorite;
-                                  });
-                                },
+                                onPressed: () => _toggleFavorite(resep, resepId),
                               ),
                             ],
                           ),

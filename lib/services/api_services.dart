@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiService {
   // Deteksi platform otomatis untuk base URL
@@ -186,5 +187,80 @@ class ApiService {
       print('Remove favorite error: $e');
       throw Exception('Gagal menghapus favorit: $e');
     }
+  }
+
+  // ========== RESEP API ==========
+  
+  // Method untuk mendapatkan list resep dari backend
+  Future<Map<String, dynamic>> getResepList({int limit = 10, int offset = 0}) async {
+    try {
+      final response = await _dio.get('/resep', queryParameters: {
+        'limit': limit,
+        'offset': offset,
+      });
+      
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Gagal mengambil data resep');
+      }
+    } catch (e) {
+      print('Get resep list error: $e');
+      throw Exception('Gagal mengambil data resep: $e');
+    }
+  }
+
+  // ========== GOOGLE SIGN IN ==========
+  
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    clientId: '407408718192-9q0cndhnkrv66nl0iq54n1tmu6ckp7jl.apps.googleusercontent.com', // Web Client ID
+  );
+
+  Future<Map<String, dynamic>?> signInWithGoogle() async {
+    try {
+      // 1. Trigger Google Sign In
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      
+      if (googleUser == null) {
+        return null; // User cancelled
+      }
+
+      // 2. Get authentication details
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // 3. Get the ID token
+      final String? idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw Exception('Failed to get ID token');
+      }
+
+      print('Google ID Token: $idToken');
+
+      // 4. Send token to backend
+      final response = await _dio.post(
+        '/auth/google',
+        data: {'token': idToken},
+      );
+
+      if (response.statusCode == 200) {
+        print('Google login response: ${response.data}');
+        return response.data;
+      } else {
+        throw Exception('Google login failed: ${response.data}');
+      }
+    } on DioException catch (e) {
+      print('DioException in Google Sign In: ${e.message}');
+      print('Response: ${e.response?.data}');
+      throw Exception('Google login error: ${e.response?.data ?? e.message}');
+    } catch (error) {
+      print('Error signing in with Google: $error');
+      throw Exception('Google sign in failed: $error');
+    }
+  }
+
+  Future<void> signOutGoogle() async {
+    await _googleSignIn.signOut();
   }
 }

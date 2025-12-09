@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:masakyuk/data/resep_data.dart';
+// import 'package:masakyuk/data/resep_data.dart'; // Data dummy - tidak dipakai
 import 'package:masakyuk/models/resep_model.dart';
 import '../services/api_services.dart';
 
@@ -18,6 +18,13 @@ class _ResepPageState extends State<ResepPage> {
   final ApiService _apiService = ApiService();
   String? _token;
   Set<int> _favoritResepIds = {};
+  
+  // Toggle untuk menggunakan API atau data dummy
+  // Ubah ke true untuk pakai data dari backend
+  final bool _useApiData = true; // GANTI ke true kalau mau pakai backend
+  
+  List<Resep> _apiResepList = [];
+  bool _isLoadingApi = false;
 
   @override
   void initState() {
@@ -27,6 +34,33 @@ class _ResepPageState extends State<ResepPage> {
     }
     _loadToken();
     _loadFavorites();
+    
+    // Load data dari API jika mode API aktif
+    if (_useApiData) {
+      _loadResepFromApi();
+    }
+  }
+  
+  Future<void> _loadResepFromApi() async {
+    setState(() => _isLoadingApi = true);
+    
+    try {
+      final response = await _apiService.getResepList(limit: 100, offset: 0);
+      
+      if (response['success'] == true && response['data'] != null) {
+        final resepData = response['data']['data'] as List;
+        setState(() {
+          _apiResepList = resepData.map((json) => Resep.fromApi(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Error loading resep from API: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data resep: $e')),
+      );
+    } finally {
+      setState(() => _isLoadingApi = false);
+    }
   }
 
   Future<void> _loadToken() async {
@@ -122,8 +156,24 @@ class _ResepPageState extends State<ResepPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Pakai data dari API
+    final List<Resep> dataSource = _apiResepList;
+    
+    // Show loading saat fetch data dari API
+    if (_useApiData && _isLoadingApi) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Resep Masakan 🍲"),
+          backgroundColor: Colors.orange,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.orange),
+        ),
+      );
+    }
+    
     // Filter resep berdasarkan bahan pokok dan pencarian
-    final filteredList = resepList.where((resep) {
+    final filteredList = dataSource.where((resep) {
       final matchBahan =
           selectedBahan == "Semua" || resep.bahanPokok == selectedBahan;
       final matchSearch = resep.nama.toLowerCase().contains(

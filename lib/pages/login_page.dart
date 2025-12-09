@@ -82,14 +82,70 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => isLoading = false);
   }
 
-  void _loginWithGoogle() {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Login dengan Google belum diaktifkan"),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  Future<void> _loginWithGoogle() async {
+    setState(() => isLoading = true);
+
+    try {
+      final response = await _apiService.signInWithGoogle();
+
+      if (response == null) {
+        // User cancelled the sign-in
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login dibatalkan')),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+
+      // Check if login was successful
+      if (response['success'] == true && response.containsKey('token')) {
+        final prefs = await SharedPreferences.getInstance();
+        
+        // Save JWT token
+        await prefs.setString('token', response['token']);
+        
+        // Save user data
+        if (response.containsKey('user') && response['user'] != null) {
+          final userData = response['user'];
+          
+          if (userData['id_user'] != null) {
+            await prefs.setInt('id_user', userData['id_user']);
+          }
+          if (userData['email'] != null) {
+            await prefs.setString('email', userData['email']);
+          }
+          if (userData['name'] != null) {
+            await prefs.setString('name', userData['name']);
+          }
+        }
+
+        print('Google login success!');
+        print('Token: ${response['token']}');
+        print('User: ${response['user']}');
+
+        if (!mounted) return;
+        
+        // Navigate to main page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+        );
+      } else {
+        final errorMessage = response['message'] ?? 'Google login gagal';
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google login error: $e')),
+      );
+    }
+    
+    setState(() => isLoading = false);
   }
 
   @override

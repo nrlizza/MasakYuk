@@ -700,3 +700,34 @@
 2025-12-06 20:20:52 [ERROR]: Error: Password salah
     at S_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:31:11)
     at async C_login (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:23:25)
+2025-12-09 18:09:53 [ERROR]: Error: Google authentication failed
+    at S_googleAuth (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:94:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_googleLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:190:25)
+2025-12-09 18:16:12 [ERROR]: Error: Wrong recipient, payload audience != requiredAudience
+    at S_googleAuth (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:104:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_googleLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:190:25)
+2025-12-09 18:18:54 [ERROR]: Error: null value in column "nama_lengkap" of relation "master_user" violates not-null constraint
+    at S_googleAuth (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:104:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_googleLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:190:25)
+2025-12-09 18:23:49 [ERROR]: Error: null value in column "password" of relation "master_user" violates not-null constraint
+    at S_googleAuth (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:109:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_googleLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:190:25)
+2025-12-09 18:25:11 [ERROR]: Error: Token bukan Google ID Token yang valid. Pastikan menggunakan ID Token dari Google Sign In, bukan JWT token aplikasi.
+    at S_googleAuth (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:109:11)
+    at C_googleLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:190:31)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\route.js:117:3)
+    at handle (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\lib\layer.js:152:17)
+    at D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:295:15
+    at processParams (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:582:12)
+    at next (D:\Semester 5\Manajemen Proyek Sistem Informasi\express\node_modules\router\index.js:291:5)
+2025-12-09 20:02:38 [ERROR]: Error: Token used too late, 1765285358.742 > 1765282815: {"iss":"https://accounts.google.com","azp":"407408718192.apps.googleusercontent.com","aud":"407408718192.apps.googleusercontent.com","sub":"105577104739220052769","hd":"students.paramadina.ac.id","email":"nurul.izza@students.paramadina.ac.id","email_verified":true,"at_hash":"EHxLw2LE60JEnic-25mCoQ","iat":1765278915,"exp":1765282515}
+    at S_googleAuth (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.services.js:109:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C_googleLogin (file:///D:/Semester%205/Manajemen%20Proyek%20Sistem%20Informasi/express/src/api/auth/auth.controller.js:190:25)

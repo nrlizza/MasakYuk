@@ -71,7 +71,7 @@ export async function C_register(req, res, next) {
       const errorMessage = validation.error?.errors?.[0]?.message || 'Validation error';
       return res.status(400).json({
         success: false,
-        message: errorMessage,
+        message: validation,
         errors: validation.error?.errors
       });
     }

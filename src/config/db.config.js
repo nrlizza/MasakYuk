@@ -8,10 +8,12 @@ const db = new Pool({
   host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  // Tambahkan timeout
-  connectionTimeoutMillis: 5000,
+  port: parseInt(process.env.DB_PORT),
+  // Tambahkan timeout dan retry config
+  connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000,
+  max: 10, // Maximum number of clients in pool
+  allowExitOnIdle: false,
 });
 
 // Test connection

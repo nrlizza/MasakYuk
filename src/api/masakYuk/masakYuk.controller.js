@@ -23,7 +23,7 @@ export async function C_getAllKategori(req, res) {
 // Get all resep with pagination
 export async function C_getAllResep(req, res) {
   try {
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 30;
     const offset = parseInt(req.query.offset) || 0;
     const resep = await S_getAllResep(limit, offset);
     res.json({ success: true, data: resep });

@@ -32,13 +32,16 @@ export async function M_register(payload) {
 export async function M_registerGoogle(payload) {
   const { nama_lengkap, email, google_id, avatar } = payload;
   
+  // Generate random password untuk user Google (tidak akan digunakan)
+  const randomPassword = await bcrypt.hash(Math.random().toString(36), 10);
+  
   const sql = `
-    INSERT INTO master_user (nama_lengkap, email, google_id, avatar, is_google_auth)
-    VALUES ($1, $2, $3, $4, true)
+    INSERT INTO master_user (nama_lengkap, email, password, google_id, avatar, is_google_auth)
+    VALUES ($1, $2, $3, $4, $5, true)
     RETURNING *;
   `;
 
-  const result = await db.query(sql, [nama_lengkap, email, google_id, avatar]);
+  const result = await db.query(sql, [nama_lengkap, email, randomPassword, google_id, avatar]);
   return result.rows[0];
 }
 

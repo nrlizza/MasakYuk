@@ -55,6 +55,16 @@ export async function S_register(payload) {
 // ✅ SERVICE BARU: Google Auth
 export async function S_googleAuth(token) {
   try {
+    // Validasi GOOGLE_CLIENT_ID
+    if (!GOOGLE_CLIENT_ID) {
+      throw new Error('GOOGLE_CLIENT_ID tidak ditemukan di environment variables');
+    }
+
+    // Cek apakah token valid (bukan JWT token dari aplikasi)
+    if (!token.startsWith('eyJhbGciOiJSUzI1NiIs')) {
+      throw new Error('Token bukan Google ID Token yang valid. Pastikan menggunakan ID Token dari Google Sign In, bukan JWT token aplikasi.');
+    }
+
     // Verify token dengan Google
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -62,7 +72,12 @@ export async function S_googleAuth(token) {
     });
 
     const payload = ticket.getPayload();
-    const { sub: googleId, email, name, picture } = payload;
+    const { sub: googleId, email, name, picture, given_name, family_name } = payload;
+
+    // Tentukan nama user dengan fallback
+    const userName = name || `${given_name || ''} ${family_name || ''}`.trim() || email.split('@')[0];
+
+    console.log('Google payload:', { googleId, email, name, given_name, family_name, userName });
 
     // Cek apakah user sudah ada dengan Google ID
     let user = await M_findByGoogleId(googleId);
@@ -77,10 +92,10 @@ export async function S_googleAuth(token) {
       } else {
         // Buat user baru
         user = await M_registerGoogle({
-          nama_lengkap: name,
+          nama_lengkap: userName,
           email: email,
           google_id: googleId,
-          avatar: picture
+          avatar: picture || null
         });
       }
     }
@@ -91,6 +106,6 @@ export async function S_googleAuth(token) {
 
   } catch (error) {
     console.error('Google auth error:', error);
-    throw new Error('Google authentication failed');
+    throw new Error(error.message || 'Google authentication failed');
   }
 }

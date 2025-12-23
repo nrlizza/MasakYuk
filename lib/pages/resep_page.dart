@@ -16,7 +16,6 @@ class _ResepPageState extends State<ResepPage> {
   String selectedBahan = "Semua";
   String searchQuery = "";
   final ApiService _apiService = ApiService();
-  String? _token;
   Set<int> _favoritResepIds = {};
   
   // Toggle untuk menggunakan API atau data dummy
@@ -32,7 +31,6 @@ class _ResepPageState extends State<ResepPage> {
     if (widget.filterBahanPokok != null) {
       selectedBahan = widget.filterBahanPokok!;
     }
-    _loadToken();
     _loadFavorites();
     
     // Load data dari API jika mode API aktif
@@ -61,13 +59,6 @@ class _ResepPageState extends State<ResepPage> {
     } finally {
       setState(() => _isLoadingApi = false);
     }
-  }
-
-  Future<void> _loadToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _token = prefs.getString('token');
-    });
   }
 
   Future<void> _loadFavorites() async {
@@ -243,7 +234,7 @@ class _ResepPageState extends State<ResepPage> {
               ),
               itemBuilder: (context, index) {
                 final resep = filteredList[index];
-                final resepId = resepList.indexOf(resep) + 1;
+                final resepId = resep.id;
                 final isFavorite = _favoritResepIds.contains(resepId);
                 
                 return GestureDetector(

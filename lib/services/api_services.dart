@@ -214,17 +214,22 @@ class ApiService {
   
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    clientId: '407408718192-9q0cndhnkrv66nl0iq54n1tmu6ckp7jl.apps.googleusercontent.com', // Web Client ID
+    clientId: '407408718192.apps.googleusercontent.com', // Web Client ID - HARUS SAMA dengan backend .env
   );
 
   Future<Map<String, dynamic>?> signInWithGoogle() async {
     try {
+      print('🔐 Memulai Google Sign In...');
+      
       // 1. Trigger Google Sign In
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       
       if (googleUser == null) {
+        print('❌ User membatalkan sign in');
         return null; // User cancelled
       }
+
+      print('✅ User dipilih: ${googleUser.email}');
 
       // 2. Get authentication details
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -233,29 +238,62 @@ class ApiService {
       final String? idToken = googleAuth.idToken;
 
       if (idToken == null) {
-        throw Exception('Failed to get ID token');
+        print('❌ Gagal mendapatkan ID token dari Google');
+        throw Exception('Failed to get ID token. Pastikan SHA-1 sudah dikonfigurasi di Google Cloud Console');
       }
 
-      print('Google ID Token: $idToken');
+      print('✅ ID Token berhasil didapat');
+      print('🔑 Token (50 char): ${idToken.substring(0, 50)}...');
 
       // 4. Send token to backend
+      print('📤 Mengirim token ke backend: ${getBaseUrl()}/auth/google');
+      
       final response = await _dio.post(
         '/auth/google',
         data: {'token': idToken},
       );
 
       if (response.statusCode == 200) {
-        print('Google login response: ${response.data}');
+        print('✅ Google login berhasil!');
+        print('📦 Response: ${response.data}');
         return response.data;
       } else {
+        print('❌ Backend error: status ${response.statusCode}');
         throw Exception('Google login failed: ${response.data}');
       }
     } on DioException catch (e) {
-      print('DioException in Google Sign In: ${e.message}');
-      print('Response: ${e.response?.data}');
-      throw Exception('Google login error: ${e.response?.data ?? e.message}');
+      print('❌ DioException in Google Sign In');
+      print('   Type: ${e.type}');
+      print('   Message: ${e.message}');
+      print('   Response data: ${e.response?.data}');
+      print('   Status code: ${e.response?.statusCode}');
+      
+      String errorMsg = 'Google login error';
+      if (e.response?.data != null && e.response?.data['message'] != null) {
+        errorMsg = e.response?.data['message'];
+      } else if (e.type == DioExceptionType.connectionError) {
+        errorMsg = 'Tidak dapat terhubung ke backend. Pastikan server berjalan di ${getBaseUrl()}';
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        errorMsg = 'Koneksi timeout. Pastikan backend berjalan';
+      }
+      
+      throw Exception(errorMsg);
     } catch (error) {
-      print('Error signing in with Google: $error');
+      print('❌ Error signing in with Google: $error');
+      
+      // Berikan error message yang lebih spesifik
+      if (error.toString().contains('PlatformException')) {
+        if (error.toString().contains('sign_in_failed') || error.toString().contains('SIGN_IN_FAILED')) {
+          throw Exception('Google Sign In gagal. Pastikan:\n'
+              '1. SHA-1 fingerprint sudah dikonfigurasi di Google Cloud Console\n'
+              '2. Package name di Google Console = com.example.masakyuk\n'
+              '3. OAuth Client ID sudah dibuat untuk Android\n\n'
+              'Error: $error');
+        } else if (error.toString().contains('network_error')) {
+          throw Exception('Error jaringan. Periksa koneksi internet Anda');
+        }
+      }
+      
       throw Exception('Google sign in failed: $error');
     }
   }

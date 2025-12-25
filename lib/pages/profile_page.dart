@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
+import '../services/api_services.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -22,14 +23,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      nameController.text = prefs.getString('username') ?? 'Nama Pengguna';
+      nameController.text = prefs.getString('name') ?? 'Nama Pengguna';
       cityController.text = prefs.getString('city') ?? 'Kota Asal';
     });
   }
 
   Future<void> _saveProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', nameController.text);
+    await prefs.setString('name', nameController.text);
     await prefs.setString('city', cityController.text);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -71,15 +72,35 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (confirm == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
+      try {
+        // 1. Sign out dari Google
+        await ApiService().logout();
 
-      if (context.mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginPage()),
-          (route) => false,
-        );
+        // 2. Clear SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+
+        if (context.mounted) {
+          // 3. Navigate ke LoginPage
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+            (route) => false,
+          );
+        }
+      } catch (e) {
+        print('Error logout: $e');
+        // Tetap logout dari SharedPreferences walau Google sign out error
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+
+        if (context.mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+            (route) => false,
+          );
+        }
       }
     }
   }

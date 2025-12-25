@@ -33,28 +33,34 @@ class _LoginPageState extends State<LoginPage> {
       // Simpan token, email, dan id_user jika ada
       if (response.containsKey('token')) {
         final prefs = await SharedPreferences.getInstance();
-        
+
         // SELALU simpan token dan id_user untuk keperluan favorit
         await prefs.setString('token', response['token']);
-        
+
         // Simpan email hanya jika rememberMe dicentang
         if (rememberMe) {
           await prefs.setString('email', _emailController.text.trim());
         }
-        
-        // Simpan id_user dari response
+
+        // Simpan id_user dan nama lengkap dari response
         if (response.containsKey('data') && response['data'] != null) {
           final userData = response['data'];
           if (userData['id_user'] != null) {
             await prefs.setInt('id_user', userData['id_user']);
+          }
+          if (userData['nama_lengkap'] != null) {
+            await prefs.setString('name', userData['nama_lengkap']);
           }
         } else if (response.containsKey('user') && response['user'] != null) {
           final userData = response['user'];
           if (userData['id_user'] != null) {
             await prefs.setInt('id_user', userData['id_user']);
           }
+          if (userData['nama_lengkap'] != null) {
+            await prefs.setString('name', userData['nama_lengkap']);
+          }
         }
-        
+
         print('Token saved: ${response['token']}');
         print('User ID saved: ${await prefs.getInt('id_user')}');
 
@@ -68,15 +74,15 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         final errorMessage = response['message'] ?? 'Login gagal';
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login error: $e')));
     }
 
     setState(() => isLoading = false);
@@ -91,9 +97,9 @@ class _LoginPageState extends State<LoginPage> {
       if (response == null) {
         // User cancelled the sign-in
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login dibatalkan')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login dibatalkan')));
         setState(() => isLoading = false);
         return;
       }
@@ -101,14 +107,14 @@ class _LoginPageState extends State<LoginPage> {
       // Check if login was successful
       if (response['success'] == true && response.containsKey('token')) {
         final prefs = await SharedPreferences.getInstance();
-        
+
         // Save JWT token
         await prefs.setString('token', response['token']);
-        
+
         // Save user data
         if (response.containsKey('user') && response['user'] != null) {
           final userData = response['user'];
-          
+
           if (userData['id_user'] != null) {
             await prefs.setInt('id_user', userData['id_user']);
           }
@@ -125,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
         print('User: ${response['user']}');
 
         if (!mounted) return;
-        
+
         // Navigate to main page
         Navigator.pushReplacement(
           context,
@@ -134,17 +140,17 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         final errorMessage = response['message'] ?? 'Google login gagal';
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google login error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Google login error: $e')));
     }
-    
+
     setState(() => isLoading = false);
   }
 
@@ -193,7 +199,9 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 38), // 0.15*255 ≈ 38
+                        color: Colors.black.withValues(
+                          alpha: 38,
+                        ), // 0.15*255 ≈ 38
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),

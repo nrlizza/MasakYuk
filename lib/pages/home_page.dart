@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../data/resep_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/resep_model.dart';
+import '../services/api_services.dart';
 import 'resep_page.dart';
+import 'detail_resep_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,6 +13,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ApiService _apiService = ApiService();
+  List<Resep> _resepList = [];
+  bool _isLoading = true;
+
   final List<Map<String, dynamic>> kategori = [
     {"nama": "Semua", "color": Colors.orange.shade100},
     {"nama": "Ayam", "color": Colors.red.shade100},
@@ -23,186 +29,51 @@ class _HomePageState extends State<HomePage> {
     {"nama": "Singkong", "color": Colors.pink.shade100},
   ];
 
-  // 🔸 Ambil 3 resep populer dari data utama (resep_data.dart)
-  final List<Resep> resepPopuler = resepList.take(3).toList();
-
   String searchQuery = "";
 
-  void _showDetailPopup(BuildContext context, Resep resep) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-        title: Text(
-          resep.nama,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-        ),
-        content: SizedBox(
-          width: double.maxFinite, // WAJIB! Biar tidak error hasSize
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // GAMBAR
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      resep.gambar,
-                      height: 200,
-                      width: double.maxFinite,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+  @override
+  void initState() {
+    super.initState();
+    _loadResep();
+  }
 
-                // BAHAN POKOK
-                Text(
-                  "Bahan Pokok: ${resep.bahanPokok}",
-                  style: const TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 15,
-                    color: Colors.brown,
-                  ),
-                ),
-                const SizedBox(height: 16),
+  Future<void> _loadResep() async {
+    setState(() => _isLoading = true);
 
-                // BAHAN-BAHAN
-                const Text(
-                  "Bahan-bahan:",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  resep.bahan,
-                  style: const TextStyle(height: 1.6, fontSize: 15),
-                ),
-                const SizedBox(height: 16),
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
 
-                // CARA MEMBUAT
-                const Text(
-                  "Cara Membuat:",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                ...resep.cara
-                    .split('\n')
-                    .where((l) => l.trim().isNotEmpty)
-                    .map((l) => l.trim())
-                    .toList()
-                    .asMap()
-                    .entries
-                    .map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.only(bottom: 13),
-                        child: RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                              fontSize: 15,
-                              height: 1.65,
-                              color: Colors.black87,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: "${e.key + 1}. ",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              TextSpan(text: e.value),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+      final response = await _apiService.getResepList(
+        limit: 100,
+        offset: 0,
+        token: token,
+      );
 
-                // TIPS
-                if (resep.tipsPenyajian.trim().isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  const Text(
-                    "💡Tips Penyajian:",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 12),
-                  ...resep.tipsPenyajian
-                      .split('\n')
-                      .where((l) => l.trim().isNotEmpty)
-                      .map((l) => l.trim())
-                      .toList()
-                      .asMap()
-                      .entries
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontSize: 15,
-                                height: 1.65,
-                                color: Colors.black87,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "${e.key + 1}. ",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.orange,
-                                  ),
-                                ),
-                                TextSpan(text: e.value),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                ],
-
-                // SUMBER
-                if (resep.sumber.trim().isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Sumber:",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    resep.sumber,
-                    style: const TextStyle(
-                      color: Colors.blueGrey,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-        // INI YANG BIKIN TOMBOL TUTUP MUNCUL DI POJOK KANAN BAWAH
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              "Tutup",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ],
-        actionsAlignment: MainAxisAlignment.end, // INI KUNCI UTAMANYA!
-      ),
-    );
+      if (response['success'] == true && response['data'] != null) {
+        final resepData = response['data']['data'] as List;
+        setState(() {
+          _resepList = resepData.map((json) => Resep.fromApi(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Error loading resep: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.orange),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
@@ -313,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                             padding: EdgeInsets.zero,
                             shrinkWrap: true,
                             physics: const ClampingScrollPhysics(),
-                            itemCount: resepList
+                            itemCount: _resepList
                                 .where(
                                   (r) =>
                                       r.nama.toLowerCase().contains(
@@ -330,7 +201,7 @@ class _HomePageState extends State<HomePage> {
                                 .length,
                             itemBuilder: (context, index) {
                               // Daftar hasil pencarian
-                              final List<Resep> hasilCari = resepList
+                              final List<Resep> hasilCari = _resepList
                                   .where(
                                     (r) =>
                                         r.nama.toLowerCase().contains(
@@ -351,12 +222,43 @@ class _HomePageState extends State<HomePage> {
                               return ListTile(
                                 leading: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset(
-                                    resep.gambar,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  child: resep.gambar.startsWith('http')
+                                      ? Image.network(
+                                          resep.gambar,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  color: Colors.grey[300],
+                                                  child: const Icon(
+                                                    Icons.restaurant,
+                                                    size: 25,
+                                                  ),
+                                                );
+                                              },
+                                        )
+                                      : Image.asset(
+                                          resep.gambar,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  color: Colors.grey[300],
+                                                  child: const Icon(
+                                                    Icons.restaurant,
+                                                    size: 25,
+                                                  ),
+                                                );
+                                              },
+                                        ),
                                 ),
                                 title: Text(
                                   resep.nama,
@@ -377,11 +279,16 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.grey,
                                 ),
                                 onTap: () {
-                                  _showDetailPopup(context, resep);
                                   setState(() {
-                                    searchQuery =
-                                        ""; // otomatis hilang setelah klik
+                                    searchQuery = "";
                                   });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailResepPage(resep: resep),
+                                    ),
+                                  );
                                 },
                               );
                             },
@@ -561,9 +468,16 @@ class _HomePageState extends State<HomePage> {
             ),
 
             // CARD RESEP POPULER — VERSI SUPER RAPI & PROFESIONAL
-            ...resepPopuler.map((resep) {
+            ...(_resepList.take(3).toList()).map((resep) {
               return GestureDetector(
-                onTap: () => _showDetailPopup(context, resep),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailResepPage(resep: resep),
+                    ),
+                  );
+                },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -587,12 +501,41 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: const BorderRadius.horizontal(
                           left: Radius.circular(20),
                         ),
-                        child: Image.asset(
-                          resep.gambar,
-                          width: 130,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        ),
+                        child: resep.gambar.startsWith('http')
+                            ? Image.network(
+                                resep.gambar,
+                                width: 130,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 130,
+                                    height: 120,
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.restaurant,
+                                      size: 40,
+                                    ),
+                                  );
+                                },
+                              )
+                            : Image.asset(
+                                resep.gambar,
+                                width: 130,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 130,
+                                    height: 120,
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.restaurant,
+                                      size: 40,
+                                    ),
+                                  );
+                                },
+                              ),
                       ),
 
                       // Teks di sebelah kanan

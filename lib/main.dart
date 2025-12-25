@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/splash_screen.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 import 'pages/resep_page.dart';
@@ -21,8 +22,8 @@ class MasakYukApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      // Halaman awal = login
-      home: const LoginPage(),
+      // Halaman awal = splash screen
+      home: const SplashScreen(),
     );
   }
 }

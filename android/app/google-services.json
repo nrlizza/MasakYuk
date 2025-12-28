@@ -1,37 +1,37 @@
 {
   "project_info": {
-    "project_number": "190267423902",
-    "project_id": "masakyuk-d8af3",
-    "storage_bucket": "masakyuk-d8af3.firebasestorage.app"
+    "project_number": "329143622852",
+    "project_id": "masakyuk2",
+    "storage_bucket": "masakyuk2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:190267423902:android:ab688b88942f0fec698f8f",
+        "mobilesdk_app_id": "1:329143622852:android:cae9aefb42b5baf7093d91",
         "android_client_info": {
-          "package_name": "com.example.masakyuk"
+          "package_name": "id.masakyuk.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "190267423902-4avbhefin23ldaeb1njdhvbhnipp3b6f.apps.googleusercontent.com",
+          "client_id": "329143622852-ddilru4hrp2rga8t40qfr89cjo9qcmau.apps.googleusercontent.com",
           "client_type": 3
         },
-        {
+          {
           "client_id": "576275898436-d4vu41fuiffvnrthqgthc1m6fpau8k0k.apps.googleusercontent.com",
           "client_type": 3
         } 
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDCdtpNdrcqxZthS-8u9Zm2cGXllngYcFk"
+          "current_key": "AIzaSyBs7Gv2f37sY_aHzoc6_aex5Ki2dScIy4I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "190267423902-4avbhefin23ldaeb1njdhvbhnipp3b6f.apps.googleusercontent.com",
+              "client_id": "329143622852-ddilru4hrp2rga8t40qfr89cjo9qcmau.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

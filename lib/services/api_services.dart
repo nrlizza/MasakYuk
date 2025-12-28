@@ -12,7 +12,7 @@ class ApiService {
     } else if (Platform.isAndroid) {
       // Android: Pakai IP komputer untuk HP fisik
       // Ganti IP ini dengan IP komputer Anda (lihat ipconfig)
-      return "http://192.168.0.191:3000/api";
+      return "http://172.20.10.8:3000/api";
     } else {
       // iOS Simulator, Desktop: gunakan localhost
       return "http://localhost:3000/api";

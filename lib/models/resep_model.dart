@@ -28,11 +28,19 @@ class Resep {
     print('DEBUG - bahan_bahan: ${json['bahan_bahan']}');
     print('DEBUG - cara_membuat: ${json['cara_membuat']}');
 
-    // Gunakan gambar dari database jika ada, jika tidak gunakan default
+    // Gunakan gambar dari database, tambahkan path assets/img/ jika perlu
     String gambarUrl = '';
     if (json['image'] != null && json['image'].toString().isNotEmpty) {
-      gambarUrl = json['image'];
+      String imagePath = json['image'].toString();
+      // Jika sudah ada 'assets/', gunakan langsung
+      if (imagePath.startsWith('assets/')) {
+        gambarUrl = imagePath;
+      } else {
+        // Jika hanya nama file, tambahkan path assets/img/
+        gambarUrl = 'assets/img/$imagePath';
+      }
     } else {
+      // Fallback ke gambar default jika database tidak ada image
       gambarUrl = _getDefaultImage(json['nama_resep'] ?? '');
     }
 

@@ -1,4 +1,4 @@
-package com.example.masakyuk;
+package id.masakyuk.app;
 
 import io.flutter.embedding.android.FlutterActivity;
 

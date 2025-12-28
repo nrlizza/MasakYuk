@@ -16,20 +16,17 @@ class DetailResepPage extends StatelessWidget {
             expandedHeight: 300,
             pinned: true,
             backgroundColor: Colors.orange,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                resep.nama,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0, 1),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ],
-                ),
+            iconTheme: const IconThemeData(color: Colors.white),
+            centerTitle: true,
+            title: Text(
+              resep.nama,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
               ),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
                 children: [

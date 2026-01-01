@@ -16,6 +16,7 @@ export async function M_getAllResep(limit = 10, offset = 0) {
       a.image,
       a.bahan_bahan,
       a.cara_membuat,
+      a.sumber,
       b.nama_kategori
     FROM resep_data a
     INNER JOIN master_kategori b ON a.id_kategori = b.id_kategori
@@ -46,6 +47,7 @@ export async function M_getResepById(id_resep) {
       a.image,
       a.bahan_bahan,
       a.cara_membuat,
+      a.sumber,
       b.nama_kategori
     FROM resep_data a
     INNER JOIN master_kategori b ON a.id_kategori = b.id_kategori
@@ -63,6 +65,7 @@ export async function M_getResepByKategori(id_kategori) {
       a.image,
       a.bahan_bahan,
       a.cara_membuat,
+      a.sumber,
       b.nama_kategori
     FROM resep_data a
     INNER JOIN master_kategori b ON a.id_kategori = b.id_kategori
@@ -82,6 +85,7 @@ export async function M_getResepDisimpanByUser(id_user) {
       b.image,
       b.bahan_bahan,
       b.cara_membuat,
+      b.sumber,
       c.nama_kategori
     FROM user_simpan_resep a
     INNER JOIN resep_data b ON a.id_resep = b.id_resep

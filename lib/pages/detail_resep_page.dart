@@ -156,14 +156,30 @@ class DetailResepPage extends StatelessWidget {
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: resep.bahan
-                                .split(
-                                  RegExp(r'[,\n]'),
-                                ) // Split berdasarkan koma atau newline
-                                .map((item) => item.trim())
-                                .where((item) => item.isNotEmpty)
-                                .map((item) {
+                                .split('\n') // Split berdasarkan newline
+                                .map((line) => line.trim())
+                                .where((line) => line.isNotEmpty)
+                                .map((line) {
+                                  // Cek apakah ini header/section (berakhir dengan :)
+                                  if (line.endsWith(':')) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 12,
+                                        bottom: 8,
+                                      ),
+                                      child: Text(
+                                        line,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
                                   // Hapus bullet point jika sudah ada
-                                  String cleanItem = item;
+                                  String cleanItem = line;
                                   if (cleanItem.startsWith('•') ||
                                       cleanItem.startsWith('-')) {
                                     cleanItem = cleanItem.substring(1).trim();
@@ -176,7 +192,7 @@ class DetailResepPage extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         const Text(
-                                          '- ',
+                                          '• ',
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -317,6 +333,47 @@ class DetailResepPage extends StatelessWidget {
                       child: Text(
                         resep.tipsPenyajian,
                         style: const TextStyle(fontSize: 15, height: 1.6),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+
+                  // Sumber resep
+                  if (resep.sumber.trim().isNotEmpty) ...[
+                    const Text(
+                      "📌 Sumber Resep",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.link,
+                            color: Colors.orange.shade700,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              resep.sumber,
+                              style: TextStyle(
+                                fontSize: 15,
+                                height: 1.6,
+                                color: Colors.orange.shade900,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 30),

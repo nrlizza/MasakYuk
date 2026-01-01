@@ -7,6 +7,7 @@ class Resep {
   final String cara;
   final String bahanPokok;
   final String tipsPenyajian;
+  final String sumber;
   bool isFavorite;
 
   Resep({
@@ -18,6 +19,7 @@ class Resep {
     required this.cara,
     required this.bahanPokok,
     required this.tipsPenyajian,
+    required this.sumber,
     this.isFavorite = false,
   });
 
@@ -44,33 +46,16 @@ class Resep {
       gambarUrl = _getDefaultImage(json['nama_resep'] ?? '');
     }
 
-    // Convert array bahan_bahan menjadi string dengan bullet points
+    // Ambil bahan_bahan langsung sebagai string dari database
     String bahan = '';
     if (json['bahan_bahan'] != null) {
-      if (json['bahan_bahan'] is List) {
-        final bahanList = json['bahan_bahan'] as List;
-        if (bahanList.isNotEmpty) {
-          bahan = bahanList.map((item) => '• ${item.toString()}').join('\n');
-        }
-      } else if (json['bahan_bahan'] is String) {
-        // Jika sudah dalam bentuk string
-        bahan = json['bahan_bahan'];
-      }
+      bahan = json['bahan_bahan'].toString();
     }
 
-    // Convert array cara_membuat menjadi string tanpa numbering
-    // (numbering akan ditambahkan di UI)
+    // Ambil cara_membuat langsung sebagai string dari database
     String cara = '';
     if (json['cara_membuat'] != null) {
-      if (json['cara_membuat'] is List) {
-        final caraList = json['cara_membuat'] as List;
-        if (caraList.isNotEmpty) {
-          cara = caraList.map((step) => step.toString()).join('\n');
-        }
-      } else if (json['cara_membuat'] is String) {
-        // Jika sudah dalam bentuk string
-        cara = json['cara_membuat'];
-      }
+      cara = json['cara_membuat'].toString();
     }
 
     print('DEBUG - bahan parsed: $bahan');
@@ -83,8 +68,9 @@ class Resep {
       gambar: gambarUrl,
       bahan: bahan,
       cara: cara,
-      bahanPokok: _getBahanPokok(json['bahan_bahan']),
-      tipsPenyajian: '',
+      bahanPokok: _getBahanPokok(bahan),
+      tipsPenyajian: json['tips_penyajian'] ?? '',
+      sumber: json['sumber'] ?? '',
       isFavorite: false,
     );
   }
@@ -105,34 +91,28 @@ class Resep {
     return 'assets/img/lemper.jpg'; // Default fallback
   }
 
-  // Helper function untuk tentukan bahan pokok dari array bahan
-  static String _getBahanPokok(dynamic bahanBahan) {
-    if (bahanBahan == null) return 'Lainnya';
+  // Helper function untuk tentukan bahan pokok dari string bahan
+  static String _getBahanPokok(String bahanStr) {
+    if (bahanStr.isEmpty) return 'Lainnya';
 
-    String bahanStr = '';
-    if (bahanBahan is List) {
-      bahanStr = bahanBahan.join(' ').toLowerCase();
-    } else if (bahanBahan is String) {
-      bahanStr = bahanBahan.toLowerCase();
-    } else {
-      return 'Lainnya';
-    }
+    final bahan = bahanStr.toLowerCase();
 
-    if (bahanStr.contains('ayam')) return 'Ayam';
-    if (bahanStr.contains('daging') || bahanStr.contains('sapi'))
+    if (bahan.contains('ayam')) return 'Ayam';
+    if (bahan.contains('daging') || bahan.contains('sapi'))
       return 'Daging';
-    if (bahanStr.contains('ikan') ||
-        bahanStr.contains('udang') ||
-        bahanStr.contains('cumi'))
+    if (bahan.contains('ikan') ||
+        bahan.contains('udang') ||
+        bahan.contains('cumi'))
       return 'Seafood';
-    if (bahanStr.contains('tepung')) return 'Tepung';
-    if (bahanStr.contains('beras') ||
-        bahanStr.contains('nasi') ||
-        bahanStr.contains('ketan'))
+    if (bahan.contains('tepung')) return 'Tepung';
+    if (bahan.contains('beras') ||
+        bahan.contains('nasi') ||
+        bahan.contains('ketan'))
       return 'Beras';
-    if (bahanStr.contains('kacang')) return 'Kacang';
-    if (bahanStr.contains('singkong')) return 'Singkong';
-    if (bahanStr.contains('sayur')) return 'Sayur';
+    if (bahan.contains('kacang')) return 'Kacang';
+    if (bahan.contains('singkong') || bahan.contains('gaplek'))
+      return 'Singkong';
+    if (bahan.contains('sayur')) return 'Sayur';
 
     return 'Lainnya';
   }
